@@ -8,7 +8,10 @@ class InicioPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Padding(padding: context),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(children: [const Text('Hola gente')]),
+      ),
     );
   }
 }
