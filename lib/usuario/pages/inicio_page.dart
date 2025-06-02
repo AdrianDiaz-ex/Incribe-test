@@ -6,6 +6,9 @@ class InicioPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: AppColors.background);
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: Padding(padding: context),
+    );
   }
 }
