@@ -24,7 +24,7 @@ class _MyAppState extends State<MyApp> {
     final password = _passwordController.text;
 
     // Simulación de login
-    if (!isAdmin && email == 'test@example.com' && password == '123456') {
+    if (!isAdmin && email == 'test@example.com' && password == '123') {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('¡Login exitoso!')));
