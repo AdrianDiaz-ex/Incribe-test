@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:inscribe_test/core/app_colors.dart';
+import 'actualizar_datos.dart';
+import 'crear_horario.dart';
+import 'pago.dart';
+import 'descargar_boleta.dart';
+import '../../global.dart';
+
+// ignore: non_constant_identifier_names
 
 class ReinscripcionPage extends StatelessWidget {
   const ReinscripcionPage({super.key});
@@ -17,7 +25,7 @@ class ReinscripcionPage extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: Colors.greenAccent.shade100.withOpacity(0.2),
-          child: Icon(icon, color: Colors.greenAccent),
+          child: Icon(icon, color: IconColors.primary),
         ),
         title: Text(
           title,
@@ -47,24 +55,16 @@ class ReinscripcionPage extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(top: 20),
         children: [
-          const Center(
-            child: Text(
-              'Proceso de Reinscripción',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
           _buildStepCard(
             icon: Icons.edit_document,
             title: '1. Actualización de datos',
             description:
                 'Verifica y actualiza tus datos personales y académicos.',
             onTap: () {
-              // Acción para actualizar datos
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ActualizarDatos()),
+              );
             },
           ),
           _buildStepCard(
@@ -72,7 +72,10 @@ class ReinscripcionPage extends StatelessWidget {
             title: '2. Descarga de boleta',
             description: 'Descarga la boleta del último semestre cursado.',
             onTap: () {
-              // Acción para descargar boleta
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const DescargarBoleta()),
+              );
             },
           ),
           _buildStepCard(
@@ -80,7 +83,10 @@ class ReinscripcionPage extends StatelessWidget {
             title: '3. Subir comprobante de pago',
             description: 'Escanea y sube el recibo de pago de reinscripción.',
             onTap: () {
-              // Acción para escanear/subir archivo
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const EscaneoPagoPage()),
+              );
             },
           ),
           _buildStepCard(
@@ -88,7 +94,10 @@ class ReinscripcionPage extends StatelessWidget {
             title: '4. Crear nuevo horario',
             description: 'Selecciona tus materias y arma tu horario.',
             onTap: () {
-              // Acción para crear horario
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CrearHorario()),
+              );
             },
           ),
         ],

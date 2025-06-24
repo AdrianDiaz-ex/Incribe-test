@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:inscribe_test/core/app_colors.dart';
 import 'pages/inicio_page.dart';
-import 'pages/horario_page.dart';
-import 'pages/historial_page.dart';
-import 'pages/reinscripcion_page.dart';
+import 'pages/Maestros.dart';
+import 'pages/Grupos.dart';
+import 'pages/Alumnos.dart';
 import '../main.dart';
+import '../core/app_colors.dart';
+import 'pages/informes.dart';
 
 class AdminInicio extends StatelessWidget {
   const AdminInicio({super.key});
@@ -33,7 +36,8 @@ class _BottomNavigationBarExampleState
     InicioPage(),
     HorarioPage(),
     HistorialPage(),
-    ReinscripcionPage(),
+    DatosAlumnosPage(),
+    EstadisticasPage(),
   ];
 
   void _onItemTapped(int index) {
@@ -51,17 +55,14 @@ class _BottomNavigationBarExampleState
             content: const Text('¿Estás seguro de que deseas cerrar sesión?'),
             actions: [
               TextButton(
-                onPressed:
-                    () => Navigator.of(context).pop(), // Cierra el diálogo
+                onPressed: () => Navigator.of(context).pop(),
                 child: const Text('Cancelar'),
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.of(context).pop(); // Cierra el diálogo
+                  Navigator.of(context).pop();
                   Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(
-                      builder: (context) => const MyApp(),
-                    ), // o MainPage
+                    MaterialPageRoute(builder: (context) => const MyApp()),
                     (Route<dynamic> route) => false,
                   );
                 },
@@ -72,49 +73,96 @@ class _BottomNavigationBarExampleState
     );
   }
 
+  final List<String> _titles = [
+    'INICIO',
+    'MAESTROS',
+    'GRUPOS',
+    'ALUMNOS',
+    'INFORMES',
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('BottomNavigationBar Sample'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar sesión',
-            onPressed: _logout,
+      backgroundColor: AppColors.background,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(50.0),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.background, AppColors.containerBackground],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20),
+              bottomRight: Radius.circular(20),
+            ),
           ),
-        ],
+          child: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            centerTitle: true,
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.school, color: Colors.white, size: 26),
+                const SizedBox(width: 25),
+                Text(
+                  _titles[_selectedIndex],
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            iconTheme: const IconThemeData(color: Colors.white),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.logout, size: 26),
+                tooltip: 'Cerrar sesión',
+                onPressed: _logout,
+              ),
+            ],
+          ),
+        ),
       ),
-      body: _widgetOptions[_selectedIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Inicio',
-            backgroundColor: Color.fromARGB(255, 26, 26, 26),
+
+      body: SafeArea(child: _widgetOptions[_selectedIndex]),
+
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [AppColors.background, AppColors.containerBackground],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month_outlined),
-            label: 'Horario',
-            backgroundColor: Color.fromARGB(255, 26, 26, 26),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: 'Historial',
-            backgroundColor: Color.fromARGB(255, 26, 26, 26),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.receipt_long_outlined),
-            label: 'Reinscripción',
-            backgroundColor: Color.fromARGB(255, 26, 26, 26),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 97, 122, 244),
-        unselectedItemColor: Colors.white,
-        onTap: _onItemTapped,
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
+        ),
+        child: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_month_outlined),
+              label: 'Maestros',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.history), label: 'Grupos'),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.receipt_long_outlined),
+              label: 'Alumno',
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Informe'),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor:
+              IconColors.primary, // Cambia a tu IconColors.primary si lo tienes
+          unselectedItemColor: Colors.white,
+          onTap: _onItemTapped,
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.transparent,
+        ),
       ),
     );
   }

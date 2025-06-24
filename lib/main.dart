@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'admin/Admin_inicio.dart';
 import 'usuario/Usuario_inicio.dart';
+import 'conexion/conexion.dart';
+import 'global.dart';
 
 void main() =>
     runApp(MaterialApp(debugShowCheckedModeBanner: false, home: MyApp()));
@@ -19,33 +21,52 @@ class _MyAppState extends State<MyApp> {
   final _formKey = GlobalKey<FormState>();
   String _errorMessage = '';
 
-  void _login({bool isAdmin = false}) {
+  Future<void> _login({bool isAdmin = false}) async {
     final email = _emailController.text.trim();
     final password = _passwordController.text;
+    if (isAdmin == false) {
+      try {
+        final data = await iniciarSesion(email, password, 'alumno');
+        Global().alumno = data['alumno'];
+        Global().datos =
+            data['datos'][0]; // ✅ accede al primer elemento del array
+        Global().historial = data['calificaciones'];
+        // Si es exitoso, navega al inicio del usuario
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('¡Login exitoso!')));
+        setState(() => _errorMessage = '');
 
-    // Simulación de login
-    if (!isAdmin && email == 'test@example.com' && password == '123') {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('¡Login exitoso!')));
-      setState(() => _errorMessage = '');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const UsuarioInicio()),
-      );
-    } else if (isAdmin &&
-        email == 'admin@example.com' &&
-        password == 'admin123') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('¡Login de administrador exitoso!')),
-      );
-      setState(() => _errorMessage = '');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const AdminInicio()),
-      );
-    } else {
-      setState(() => _errorMessage = 'Email o contraseña incorrectos');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const UsuarioInicio()),
+        );
+      } catch (e) {
+        print('Error en login: $e');
+        setState(
+          () => _errorMessage = 'Credenciales incorrectas o error de conexión',
+        );
+      }
+    } else if (isAdmin == true) {
+      try {
+        final data = await iniciarSesion(email, password, 'admin');
+
+        // Si es exitoso, navega al inicio del usuario
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('¡Login exitoso!')));
+        setState(() => _errorMessage = '');
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminInicio()),
+        );
+      } catch (e) {
+        print('Error en login: $e');
+        setState(
+          () => _errorMessage = 'Credenciales incorrectas o error de conexión',
+        );
+      }
     }
   }
 
