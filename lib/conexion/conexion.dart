@@ -7,7 +7,7 @@ Future<Map<String, dynamic>> iniciarSesion(
   String tipo, // <- puede ser "alumno" o "admin"
 ) async {
   try {
-    final url = Uri.parse('http://192.168.0.6:5000/login');
+    final url = Uri.parse('https://api-279a.onrender.com/login');
     print("Esperando conexión: $tipo");
 
     final response = await http.post(

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import '../../core/app_colors.dart';
+import '../../global.dart';
 
 class EscaneoPagoPage extends StatefulWidget {
   const EscaneoPagoPage({super.key});
@@ -18,7 +19,24 @@ class _EscaneoPagoPageState extends State<EscaneoPagoPage> {
 
   final ImagePicker picker = ImagePicker();
 
+  String sinAcentos(String s) {
+    const withAccents = 'áéíóúüñ';
+    const withoutAccents = 'aeiouun';
+    for (int i = 0; i < withAccents.length; i++) {
+      s = s.replaceAll(withAccents[i], withoutAccents[i]);
+    }
+    return s;
+  }
+
   Future<void> tomarFoto() async {
+    final alumno = Global().alumno;
+    final datos = Global().datos;
+    final nombre = datos?['nombre'];
+    final matricula = datos?['matricula'];
+    final apellido = datos?['apellido'];
+    final nombreCompleto =
+        '${Global().datos?['nombre']} ${Global().datos?['apellido']}'
+            .toUpperCase();
     final XFile? foto = await picker.pickImage(source: ImageSource.camera);
 
     if (foto != null) {
@@ -35,20 +53,50 @@ class _EscaneoPagoPageState extends State<EscaneoPagoPage> {
       final RecognizedText recognizedText = await textRecognizer.processImage(
         inputImage,
       );
-
       textRecognizer.close();
 
-      // Por ejemplo, buscar una palabra clave en el comprobante
-      bool valido =
-          recognizedText.text.toLowerCase().contains('pago') ||
-          recognizedText.text.toLowerCase().contains('comprobante');
+      // Procesar texto
+      String textoReconocido =
+          recognizedText.text
+              .toLowerCase()
+              .replaceAll(RegExp(r'\s+'), ' ')
+              .replaceAll('\n', ' ')
+              .trim();
+      textoReconocido = sinAcentos(textoReconocido);
+      final nombreSinAcentos = sinAcentos(nombreCompleto.toLowerCase());
+
+      int score = 0;
+
+      // Validar monto con regex flexible
+      final montoRegex = RegExp(r'3[\.,]?\s*4\s*6\s*7');
+      if (montoRegex.hasMatch(textoReconocido)) score++;
+
+      // Validar inscripcion
+      if (textoReconocido.contains('inscripcion')) score++;
+
+      // Validar nombre
+      if (textoReconocido.contains(nombreSinAcentos)) score++;
+
+      // Validar matrícula
+      if (textoReconocido.contains(matricula.toString())) score++;
+
+      bool valido = score >= 3;
 
       setState(() {
         comprobanteValido = valido;
         escaneando = false;
       });
 
+      if (valido) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          Navigator.pop(context, true);
+        });
+      }
+
       print('Texto detectado: ${recognizedText.text}');
+      print('Informacion a comparar:');
+      print('Nombre: $nombreCompleto');
+      print('Matrícula: $matricula');
     } else {
       print('No se tomó ninguna foto');
     }
@@ -118,7 +166,7 @@ class _EscaneoPagoPageState extends State<EscaneoPagoPage> {
               ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: tomarFoto,
+              onPressed: escaneando ? null : tomarFoto,
               icon: const Icon(Icons.camera_alt, color: Color(0xFF265223)),
               label: const Text(
                 'Escanear Comprobante',

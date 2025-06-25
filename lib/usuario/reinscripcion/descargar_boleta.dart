@@ -87,21 +87,33 @@ class DescargarBoleta extends StatelessWidget {
               ),
             ),
             onPressed: () async {
-              final url = Uri.parse('http://192.168.0.6:5000/boleta/1');
+              final url = Uri.parse('https://api-279a.onrender.com/boleta/1');
 
-              if (await canLaunchUrl(url)) {
-                await launchUrl(
+              try {
+                final launched = await launchUrl(
                   url,
                   mode:
                       LaunchMode
-                          .platformDefault, // asegura que use el navegador
+                          .externalApplication, // fuerza navegador externo
                 );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No hay navegador disponible')),
-                );
+                Navigator.pop(context, true);
+
+                if (!launched) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'No se pudo abrir el enlace en el navegador externo.',
+                      ),
+                    ),
+                  );
+                }
+              } catch (e) {
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text('Error: $e')));
               }
             },
+
             icon: const Icon(Icons.download),
             label: const Text(
               'Descargar Boleta (PDF)',
